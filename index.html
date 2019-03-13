@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Ligth Bulb</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <img id="myImage" onclick="bulbToggle()" src="pic_bulboff.gif" width="100" height="180">
+
+  <p>Click the light bulb to turn on/off the light.</p>
+
+  <script>
+    function bulbState(ligthOn) {
+      var image = document.getElementById('myImage')
+      if (ligthOn) {
+        image.src = "pic_bulbon.gif"
+      } else {
+        image.src = "pic_bulboff.gif"
+      }
+    }
+
+    function bulbToggle(ligthOn) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://ztxw1xys00.execute-api.us-east-1.amazonaws.com/latest/led-toggle');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var image = document.getElementById('myImage')
+          bulbState(!image.src.match('bulbon'))
+        } else {
+          console.log('Something is wrong...')
+        }
+      }
+      xhr.send()
+    }
+
+    function getLightBulbState() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://ztxw1xys00.execute-api.us-east-1.amazonaws.com/latest/led');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var result = JSON.parse(xhr.responseText)
+          bulbState(result.Item.value)
+        } else {
+          console.log('Something is wrong...')
+        }
+      }
+      xhr.send()
+    }
+
+    getLightBulbState()
+    setInterval(function() {
+      getLightBulbState()
+    }, 3000)
+  </script>
+</body>
+</html>
+
